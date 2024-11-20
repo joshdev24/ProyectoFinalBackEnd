@@ -1,6 +1,6 @@
 import ENVIROMENT from "./config/enviroment.config.js";
 import express from "express";
-//lo dejamos porque es la conexion a la DB
+
 import mongoose from './db/config.js'
 import cors from 'cors'
 import productRouter from "./router/products.router.js";

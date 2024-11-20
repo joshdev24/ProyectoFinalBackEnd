@@ -104,6 +104,7 @@ export const registerUserController = async (req, res) => {
 }
 
 
+
 export const verifyMailValidationTokenController = async (req, res) => {
     try{
         const {verification_token} = req.params

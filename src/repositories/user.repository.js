@@ -7,6 +7,8 @@ class UserRepository{
         const user = await User.findOne({_id: id})
         return user
     }
+
+    
     static async obtenerPorEmail(email){
         const user = await User.findOne({email})
         return user

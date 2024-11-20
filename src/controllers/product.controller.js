@@ -4,16 +4,15 @@ import ResponseBuilder from "../utils/builders/responseBuilder.js"
 
 export const getAllProductController = async (req, res) => {
     try{
-
-        const products_from_db = await ProductRepository.getProducts()
-        console.log(products_from_db)
+        const products = await ProductRepository.getProducts()
+        console.log(products)
 
         const response = new ResponseBuilder()
         .setOk(true)
         .setStatus(200)
         .setMessage('Productos obtenidos')
         .setPayload({
-            products: products_from_db
+            products: products
         })
         .build()
         return res.json(response)
@@ -138,7 +137,7 @@ export const createProductController = async (req, res) => {
             title,
             price,
             stock,
-            descripcion: description,
+            description,
             category,
             image_base_64: image,
             seller_id
@@ -154,7 +153,7 @@ export const createProductController = async (req, res) => {
                         title: newProductSaved.title,
                         price: newProductSaved.price,
                         stock: newProductSaved.stock,
-                        descripcion: newProductSaved.descripcion,
+                        description: newProductSaved.description,
                         category: newProductSaved.category,
                         id: newProductSaved._id
                     }
@@ -179,7 +178,7 @@ export const createProductController = async (req, res) => {
 export const updateProductController = async (req, res) => {
     try {
         const { product_id } = req.params
-        const { title, price, stock, descripcion, category } = req.body
+        const { title, price, stock, description, category } = req.body
         const seller_id = req.user.id
         if (!title) {
             const response = new ResponseBuilder()
@@ -214,7 +213,7 @@ export const updateProductController = async (req, res) => {
                 .build()
             return res.status(400).json(response)
         }
-        if (!descripcion) {
+        if (!description) {
             const response = new ResponseBuilder()
                 .setOk(false)
                 .setStatus(400)
@@ -242,14 +241,10 @@ export const updateProductController = async (req, res) => {
             title,
             price,
             stock,
-            descripcion,
+            description,
             category
         }
 
-        if(seller_id !== product_found.seller_id.toString()){
-            //Error de status 403
-            return res.sendStatus(403)
-        }
         const productoActualizado = await ProductRepository.updateProduct(product_id, newProduct)
         if (!productoActualizado) {
             const response = new ResponseBuilder()
@@ -272,7 +267,7 @@ export const updateProductController = async (req, res) => {
                         title: newProduct.title,
                         price: newProduct.price,
                         stock: newProduct.stock,
-                        descripcion: newProduct.descripcion,
+                        descripcion: newProduct.description ,
                         category: newProduct.category
                     }
                 }
@@ -304,9 +299,7 @@ export const deleteProductController = async (req, res) => {
         }
 
         //Si no sos el admin y tampoco sos el dueño entonces NO podes estar aca
-        if(req.user.role !== 'admin' && req.user.id !== product_found.seller_id.toString()){
-            return res.sendStatus(403)
-        }
+      
         const productoEliminado = await ProductRepository.deleteProduct(product_id)
         if (!productoEliminado) {
             const response = new ResponseBuilder()

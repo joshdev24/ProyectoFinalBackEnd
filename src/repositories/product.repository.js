@@ -28,7 +28,7 @@ class ProductRepository {
     static async getProducts(){
         //SELECT * FROM products WHERE active = true
         const query = 'SELECT * FROM products WHERE active = true'
-        const [registros, columnas] = await database_pool.execute(query) 
+        const [registros] = await database_pool.execute(query) 
         //Esto devuelve un array con 2 valores
         //el primer valor es el resultado o las rows / filas / registros
         //El segundo valor son las columns
@@ -44,26 +44,58 @@ class ProductRepository {
     }
 
     static async createProduct(product_data){
-        const {title, stock, price, descripcion, seller_id, image_base_64} = product_data
+        const {title, stock, price, description, seller_id, image_base_64} = product_data
         const query = `
         INSERT INTO products 
-        (title, stock, price, descripcion, seller_id, image_base_64, active) 
+        (title, stock, price, description, seller_id, image_base_64, active) 
         VALUES 
         ( ?, ?, ?, ?, ?, ?, true )
         `
         const [resultado] = await database_pool.execute(query, [
-            title, stock, price, descripcion, seller_id, image_base_64
+            title, stock, price, description, seller_id, image_base_64
         ])
         return {
             id: resultado.insertId,
             title, 
             stock, 
             price, 
-            descripcion, 
+            description, 
             seller_id, 
             image_base_64,
             active: true
         }
+    }
+
+    static async updateProduct(product_id, product_data) {
+        const { title, stock, price, description, image_base_64 } = product_data;
+    
+        const updatedTitle = title !== undefined ? title : null;
+        const updatedStock = stock !== undefined ? stock : null;
+        const updatedPrice = price !== undefined ? price : null;
+        const updatedDescription = description !== undefined ? description : null;
+        const updatedImageBase64 = image_base_64 !== undefined ? image_base_64 : null;
+    
+        const query = `
+        UPDATE products 
+        SET title = ?, stock = ?, price = ?, description = ?, image_base_64 = ?
+        WHERE id = ?
+        `;
+    
+        const [resultado] = await database_pool.execute(query, [
+            updatedTitle,
+            updatedStock,
+            updatedPrice,
+            updatedDescription,
+            updatedImageBase64,
+            product_id
+        ]);
+    
+        // Optionally, check if the update was successful
+        if (resultado.affectedRows === 0) {
+            throw new Error("Product not found or no changes made.");
+        }
+    
+        return ProductRepository.getProductById(product_id);
     }
 }
 
