@@ -125,14 +125,32 @@ export const verifyMailValidationTokenController = async (req, res) => {
         //Busco al usuario en mi DB por email
         const user = await User.findOne({email: decoded.email})
         if(!user){
-            //Logica de error de not found
+            const response = new ResponseBuilder()
+            .setOk(false)
+            .setStatus(404)
+            .setMessage('Not found')
+            .setPayload({
+                'detail': 'Usuario no encontrado'
+            })
+            .build()
+            return res.json(response)       
+            
         }
         if(user.emailVerified){
-            //Logica de email ya verificado
+            const response = new ResponseBuilder()
+            .setOk(false)
+            .setStatus(400)
+            .setMessage('Bad request')
+            .setPayload({
+                'detail': 'El usuario ya ha verificado su correo'
+            })
+            .build()
+            return res.json(response)
+            
         }
-        //En caso de pasar la validaciones
+
         user.emailVerified = true
-        //user.verificationToken = undefined
+       
 
         await user.save()
         const response = new ResponseBuilder()
