@@ -10,6 +10,7 @@ import { verifyApikeyMiddleware } from "./middleware/auth.middleware.js";
 import database_pool from "./db/config_msql.js";
 import ProductRepository from "./repositories/product.repository.js";
 
+
 const app = express();
 const PORT = ENVIROMENT.PORT || 3000
 
