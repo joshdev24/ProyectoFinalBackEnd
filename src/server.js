@@ -14,7 +14,13 @@ import ProductRepository from "./repositories/product.repository.js";
 const app = express();
 const PORT = ENVIROMENT.PORT || 3000
 
-app.use(cors())
+
+app.use(cors({
+    origin: 'https://proyecto-final-front-end-opal.vercel.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization', "x-api-key"], // Specify allowed headers
+    credentials: true // If you need to send cookies or authorization headers
+  }));
 app.use(express.json({limit: '5mb'}))
 
 
