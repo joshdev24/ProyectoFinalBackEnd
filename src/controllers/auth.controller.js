@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { sendEmail } from "../utils/mail.util.js"
 import UserRepository from "../repositories/user.repository.js"
+import e from "cors"
 
 
 
