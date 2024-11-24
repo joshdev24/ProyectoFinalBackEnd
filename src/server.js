@@ -11,17 +11,20 @@ import ProductRepository from "./repositories/product.repository.js";
 
 
 const app = express();
-const PORT = 3000
+const PORT = ENVIROMENT.PORT
 
-app.use(cors({ origin: 'https://proyecto-final-front-end-opal.vercel.app', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS' }));
-app.use(express.json({limit: '5mb'}))
+app.use(cors({
+    origin: 'https://proyecto-final-front-end-opal.vercel.app/register', // Replace with your frontend's URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+    credentials: true // If you need to send cookies or authentication headers
+  }));
 app.use(verifyApikeyMiddleware)
 
 
 app.use('/api/status', statusRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/products', productRouter)
-
 
 
 
