@@ -13,14 +13,11 @@ import ProductRepository from "./repositories/product.repository.js";
 const app = express();
 const PORT = 3000
 
-app.use(cors())
+app.use(cors({ origin: 'https://proyecto-final-front-end-opal.vercel.app' }));
 app.use(express.json({limit: '5mb'}))
 app.use(verifyApikeyMiddleware)
 
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
 app.use('/api/status', statusRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/products', productRouter)
