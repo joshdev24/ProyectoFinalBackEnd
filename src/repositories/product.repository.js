@@ -32,7 +32,6 @@ class ProductRepository {
             return registros;
         } catch (error) {
             console.error('Error fetching products:', error);
-            throw new Error('Unable to fetch products');
         }
     }
 
@@ -50,8 +49,7 @@ class ProductRepository {
         INSERT INTO products 
         (title, stock, price, description, seller_id, image_base_64, active) 
         VALUES 
-        ( ?, ?, ?, ?, ?, ?, true )
-        `
+        ( ?, ?, ?, ?, ?, ?, true )`
         const [resultado] = await database_pool.execute(query, [
             title, stock, price, description, seller_id, image_base_64
         ])
