@@ -10,27 +10,23 @@ import database_pool from "./db/config_msql.js";
 import ProductRepository from "./repositories/product.repository.js";
 
 
-
 const app = express();
-const PORT = ENVIROMENT.PORT || 3000
+const PORT = 3000
 
+app.use(cors())
 app.use(express.json({limit: '5mb'}))
-
-app.use(cors({
-  origin: 'https://proyecto-final-front-end-opal.vercel.app'
-  ,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
-  allowedHeaders: ['Content-Type', 'Authorization', "x-api-key"], 
-  credentials: true 
-}));
-
-app.use('/api/status', statusRouter)
-app.use('/api/auth', authRouter)
-app.use('/api/products', productRouter)
 app.use(verifyApikeyMiddleware)
 
 
-ProductRepository.getProducts()
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+})
+app.use('/api/status', statusRouter)
+app.use('/api/auth', authRouter)
+app.use('/api/products', productRouter)
+
+
+
 
 
 app.listen(PORT, () => {
