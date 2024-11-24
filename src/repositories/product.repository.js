@@ -25,14 +25,15 @@ import Product from "../models/product.model.js";
 //     }
 // }
 class ProductRepository {
-    static async getProducts(){
-        //SELECT * FROM products WHERE active = true
-        const query = 'SELECT * FROM products WHERE active = true'
-        const [registros] = await database_pool.execute(query) 
-        //Esto devuelve un array con 2 valores
-        //el primer valor es el resultado o las rows / filas / registros
-        //El segundo valor son las columns
-        return registros
+    static async getProducts() {
+        try {
+            const query = 'SELECT * FROM products WHERE active = true';
+            const [registros] = await database_pool.execute(query);
+            return registros;
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            throw new Error('Unable to fetch products');
+        }
     }
 
     //Si queremos devolver null cuando no se encuentre
