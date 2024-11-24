@@ -87,17 +87,13 @@ export const registerUserController = async (req, res) => {
         return res.status(201).json(response)
     }
     catch(error){
-        if(error.code === 11000){
-            res.sendStatus(400)
-        }
-        console.error('Error al registrar usuario:', error)
         const response = new ResponseBuilder()
         .setOk(false)
         .setStatus(500)
         .setMessage('Internal server error')
         .setPayload(
             {
-                detail: error.message,
+                detail: error,
                 
             }
         )
