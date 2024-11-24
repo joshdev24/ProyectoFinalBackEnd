@@ -27,7 +27,7 @@ export const registerUserController = async (req, res) => {
             .build()
             return res.status(400).json(response)
         }
-        /* const existentUser = await User.findOne({email: email})
+         const existentUser = await User.findOne({email: email})
         console.log({existentUser})
         if(existentUser){
             const response = new ResponseBuilder()
@@ -41,7 +41,7 @@ export const registerUserController = async (req, res) => {
             )
             .build()
             return res.status(400).json(response)
-        } */
+        } 
 
         const hashedPassword = await bcrypt.hash(password, 10)
         const verificationToken = jwt.sign(
@@ -51,6 +51,7 @@ export const registerUserController = async (req, res) => {
             expiresIn: '1d'
         })
         const url_verification = `http://localhost:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}`
+        if (User.findOne = false) {
         await sendEmail({
             to: email,
             subject: 'Valida tu correo electronico',
@@ -62,7 +63,9 @@ export const registerUserController = async (req, res) => {
                 href="${url_verification}"
             >Click aqui</a>
             `
-        })
+        })  
+        }
+        
 
         const newUser = new User({
             name,
@@ -187,7 +190,7 @@ export const loginController = async (req, res) => {
         if(!user.emailVerified){
             const response = new ResponseBuilder()
             .setOk(false)
-            .setStatus(403)//Contenido prohebido para usuarios que no tengan su email verificado
+            .setStatus(403)
             .setMessage('Email no verificado')
             .setPayload(
                 {
