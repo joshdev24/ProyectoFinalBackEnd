@@ -13,7 +13,7 @@ import ProductRepository from "./repositories/product.repository.js";
 const app = express();
 const PORT = 3000
 
-app.use(cors({ origin: 'https://proyecto-final-front-end-opal.vercel.app' }));
+app.use(cors({ origin: 'https://proyecto-final-front-end-opal.vercel.app', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS' }));
 app.use(express.json({limit: '5mb'}))
 app.use(verifyApikeyMiddleware)
 
