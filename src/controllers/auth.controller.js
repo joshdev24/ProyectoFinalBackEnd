@@ -65,7 +65,7 @@ export const registerUserController = async (req, res) => {
             expiresIn: '1d'
         })
         const url_verification = `http://localhost:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}`
-        if (User.findOne = false) {
+       
         await sendEmail({
             to: email,
             subject: 'Valida tu correo electronico',
@@ -78,7 +78,7 @@ export const registerUserController = async (req, res) => {
             >Click aqui</a>
             `
         })  
-        }
+        
         
 
         const newUser = new User({
