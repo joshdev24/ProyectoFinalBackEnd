@@ -1,6 +1,6 @@
 import transporter from "../config/transporter.config.js";
 
-const enviarEmail = async (options) => {
+const sendEmail = async (options) => {
     try {
         let response = await transporter.sendMail(options)
         console.log(response);
@@ -14,4 +14,4 @@ const enviarEmail = async (options) => {
     }
 }
 
-export default enviarEmail
+export default sendEmail
