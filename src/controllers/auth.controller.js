@@ -5,85 +5,103 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import enviarEmail from "../utils/mail.util.js"
 import UserRepository from "../repositories/user.repository.js"
-import e from "cors"
+
 
 
 
 
 export const registerUserController = async (req, res) => {
-    try{
-        const {name, email, password} = req.body
-        /* Hacer validacion */
-        if(!email){
-            const response = new ResponseBuilder()
-            .setOk(false)
-            .setStatus(400)
-            .setMessage('Bad request')
-            .setPayload(
-                {
-                    detail: 'El email no es valido'
-                }
-            )
-            .build()
-            return res.status(400).json(response)
-        }
+	try {
+		const { name, email, password } = req.body;
+		/* const existentUser = await User.findOne({ email: email })
 
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const verificationToken = jwt.sign(
-            {
-                email: email
-            }, ENVIROMENT.JWT_SECRET, {
-            expiresIn: '1d'
-        })
-        const url_verification = `http://localhost:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}`
+		if (existentUser) {
+			const response = new ResponseBuilder()
+				.setOk(false)
+				.setStatus(400)
+				.setMessage('Bad request')
+				.setPayload(
+					{
+						detail: 'User already exists'
+					}
+				)
+				.build()
+			return res.status(400).json(response)
+		} */
 
-        await enviarEmail({
-            to: email,
-            subject: 'Verificacion de cuenta',
-            html: `
-            <h1>Verificacion de cuenta</h1>
-            <p>Para verificar tu cuenta haz click en el siguiente link:</p>
-            <a href="${url_verification}">${url_verification}</a>
-            `
-        })
-        
-        
+		if (!email) {
+			const response = new ResponseBuilder()
+				.setOk(false)
+				.setStatus(400)
+				.setMessage('Bad request')
+				.setPayload(
+					{
+						detail: 'El mail no es valido'
+					}
+				)
+				.build()
+			return res.status(400).json(response)
+		}
 
-        const newUser = new User({
-            name,
-            email,
-            password: hashedPassword,
-            verificationToken: verificationToken,
-            emailVerified: false
-        })
+		//HASHEAR UNA CONTRASEñA CON BCRYPT.
+		const hashedPassword = await bcrypt.hash(password, 10)
+
+		const verificationToken = jwt.sign({ email: email }, ENVIROMENT.JWT_SECRET, {
+			expiresIn: '1d'
+		})
+
+		const url_verification = `http://localhost:${ENVIROMENT.BACKPORT}/api/auth/verify/${verificationToken}`
+
+		await enviarEmail({
+			to: email,
+			subject: 'Valida tu correo electronico',
+			html: `
+			<h1>Verificacion de correo electronico</h1>
+			<p>Da click en el boton de abajo para verificar</p>
+			<a href="${url_verification}"
+			>Click Aqui</a>
+			`
+		})
 
 
-        //Metodo save nos permite guardar el objeto en la DB
-        await newUser.save()
+		const newUser = new User({
+			name,
+			email,
+			password: hashedPassword,
+			verificationToken: verificationToken,
+			emailVerified: false
+		})
 
-        const response = new ResponseBuilder()
-        .setOk(true)
-        .setStatus(200)
-        .setMessage('Created')
-        .setPayload({})
-        .build()
-        return res.status(201).json(response)
-    }
-    catch(error){
-        const response = new ResponseBuilder()
-        .setOk(false)
-        .setStatus(500)
-        .setMessage('Internal server error')
-        .setPayload(
-            {
-                detail: error.message
-                
-            }
-        )
-        .build()
-        return res.status(500).json(response)
-    }
+		// Save() => Metodo que nos permite guardar el objeto en la base de datos de Mongodb
+		await newUser.save()
 
+		const response = new ResponseBuilder()
+			.setOk(true)
+			.setStatus(200)
+			.setMessage('Se creo el usuario correctamente!')
+			.setPayload({})
+			.build()
+		res.status(201).json(response)
+
+
+	} catch (error) {
+		if (error.code === 11000) {
+			res.sendStatus(400)
+		}
+		console.error('Error al registrar usuario:', error)
+		const response = new ResponseBuilder()
+			.setOk(false)
+			.setStatus(500)
+			.setMessage('Internal server error')
+			.setPayload(
+				{
+					detail: error.message,
+
+				}
+			)
+			.build()
+		return res.status(500).json(response)
+	}
 }
 
 
