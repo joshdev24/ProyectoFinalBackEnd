@@ -11,70 +11,58 @@ import e from "cors"
 
 
 export const registerUserController = async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
-
-        // Validaciones
-        if (!email || !password || !name) {
+    try{
+        const {name, email, password} = req.body
+        /* Hacer validacion */
+        if(!email){
             const response = new ResponseBuilder()
-                .setOk(false)
-                .setStatus(400)
-                .setMessage('Bad request')
-                .setPayload({ detail: 'Faltan campos obligatorios' })
-                .build();
-            return res.status(400).json(response);
+            .setOk(false)
+            .setStatus(400)
+            .setMessage('Bad request')
+            .setPayload(
+                {
+                    detail: 'El email no es valido'
+                }
+            )
+            .build()
+            return res.status(400).json(response)
         }
-
-        // Verificar formato de email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
+         const existentUser = await User.findOne({email: email})
+        console.log({existentUser})
+        if(existentUser){
             const response = new ResponseBuilder()
-                .setOk(false)
-                .setStatus(400)
-                .setMessage('Bad request')
-                .setPayload({ detail: 'El formato del email no es válido' })
-                .build();
-            return res.status(400).json(response);
-        }
+            .setOk(false)
+            .setStatus(400)
+            .setMessage('Bad request')
+            .setPayload(
+                {
+                    detail: 'El email ya esta en uso!'
+                }
+            )
+            .build()
+            return res.status(400).json(response)
+        } 
 
-        // Verificar si el usuario ya existe
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            const response = new ResponseBuilder()
-                .setOk(false)
-                .setStatus(409)
-                .setMessage('Conflict')
-                .setPayload({ detail: 'El usuario ya está registrado' })
-                .build();
-            return res.status(409).json(response);
-        }
-
-        // Hashear la contraseña
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Generar token de verificación
+        const hashedPassword = await bcrypt.hash(password, 10)
         const verificationToken = jwt.sign(
-            { email },
-            ENVIROMENT.JWT_SECRET,
-            { expiresIn: '1d' }
-        );
-
-        const urlVerification = `http://localhost:${process.env.PORT}/api/auth/verify/${verificationToken}`;
-
-        // Enviar correo de verificación
+            {
+                email: email
+            }, ENVIROMENT.JWT_SECRET, {
+            expiresIn: '1d'
+        })
+        const url_verification = `http://localhost:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}`
         await sendEmail({
             to: email,
-            subject: 'Valida tu correo electrónico',
+            subject: 'Valida tu correo electronico',
             html: `
-                <h1>Verificación de correo electrónico</h1>
-                <p>Haz clic en el botón de abajo para verificar tu correo:</p>
-                <a 
-                    style="background-color: black; color: white; padding: 10px; border-radius: 5px; text-decoration: none;"
-                    href="${urlVerification}"
-                >Verificar correo</a>
+            <h1>Verificacion de correo electronico</h1>
+            <p>Da click en el boton de abajo para verificar</p>
+            <a 
+                style='background-color: 'black'; color: 'white'; padding: 5px; border-radius: 5px;'
+                href="${url_verification}"
+            >Click aqui</a>
             `
-        });
-        
+        })
 
         const newUser = new User({
             name,
@@ -96,13 +84,17 @@ export const registerUserController = async (req, res) => {
         return res.status(201).json(response)
     }
     catch(error){
+        if(error.code === 11000){
+            res.sendStatus(400)
+        }
+        console.error('Error al registrar usuario:', error)
         const response = new ResponseBuilder()
         .setOk(false)
         .setStatus(500)
         .setMessage('Internal server error')
         .setPayload(
             {
-                detail: error.message
+                detail: error.message,
                 
             }
         )
@@ -111,7 +103,6 @@ export const registerUserController = async (req, res) => {
     }
 
 }
-
 
 
 export const verifyMailValidationTokenController = async (req, res) => {
