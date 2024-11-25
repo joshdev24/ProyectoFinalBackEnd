@@ -3,7 +3,7 @@ import User from "../models/user.model.js"
 import ResponseBuilder from "../utils/builders/responseBuilder.js"
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { sendEmail } from "../utils/mail.util.js"
+import enviarEmail from "../utils/mail.util.js"
 import UserRepository from "../repositories/user.repository.js"
 import e from "cors"
 
@@ -37,7 +37,7 @@ export const registerUserController = async (req, res) => {
         })
         const url_verification = `http://localhost:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}`
 
-        sendEmail({
+        await enviarEmail({
             to: email,
             subject: 'Verificacion de cuenta',
             html: `

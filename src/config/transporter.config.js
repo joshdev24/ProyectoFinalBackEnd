@@ -10,7 +10,11 @@ const transporter = nodemailer.createTransport({
         user: ENVIROMENT.GMAIL_USER,
         pass: ENVIROMENT.GMAIL_PASS
         
-    }
-})
+},
+tls: {
+    rejectUnauthorized: false
+}
+})   
+
 
 export default transporter
