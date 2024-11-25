@@ -63,8 +63,8 @@ export const registerUserController = async (req, res) => {
             .build()
             return res.status(400).json(response)
         }
-        if(UserRepository.obtenerPorEmail(email) !== null){
-        sendEmail({
+        if(UserRepository.obtenerPorEmail(email) == null){
+        await sendEmail({
             to: email,
             subject: 'Valida tu correo electronico',
             html: `
