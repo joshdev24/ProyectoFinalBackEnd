@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { sendEmail } from "../utils/mail.util.js"
 import UserRepository from "../repositories/user.repository.js"
+import e from "cors"
 
 
 
@@ -26,21 +27,6 @@ export const registerUserController = async (req, res) => {
             .build()
             return res.status(400).json(response)
         }
-        /* const existentUser = await User.findOne({email: email})
-        console.log({existentUser})
-        if(existentUser){
-            const response = new ResponseBuilder()
-            .setOk(false)
-            .setStatus(400)
-            .setMessage('Bad request')
-            .setPayload(
-                {
-                    detail: 'El email ya esta en uso!'
-                }
-            )
-            .build()
-            return res.status(400).json(response)
-        } */
 
         const hashedPassword = await bcrypt.hash(password, 10)
         const verificationToken = jwt.sign(
@@ -50,7 +36,7 @@ export const registerUserController = async (req, res) => {
             expiresIn: '1d'
         })
         const url_verification = `http://localhost:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}`
-        if(url_verification){
+        if (User.findOne == false) {
         await sendEmail({
             to: email,
             subject: 'Valida tu correo electronico',
@@ -62,8 +48,9 @@ export const registerUserController = async (req, res) => {
                 href="${url_verification}"
             >Click aqui</a>
             `
-        })
-    }
+        })  
+        }
+        
 
         const newUser = new User({
             name,
@@ -85,17 +72,13 @@ export const registerUserController = async (req, res) => {
         return res.status(201).json(response)
     }
     catch(error){
-        if(error.code === 11000){
-            res.sendStatus(400)
-        }
-        console.error('Error al registrar usuario:', error)
         const response = new ResponseBuilder()
         .setOk(false)
         .setStatus(500)
         .setMessage('Internal server error')
         .setPayload(
             {
-                detail: error.message,
+                detail: error.message
                 
             }
         )
