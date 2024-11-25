@@ -13,7 +13,7 @@ import UserRepository from "../repositories/user.repository.js"
 export const registerUserController = async (req, res) => {
 	try {
 		const { name, email, password } = req.body;
-		/* const existentUser = await User.findOne({ email: email })
+		 const existentUser = await User.findOne({ email: email })
 
 		if (existentUser) {
 			const response = new ResponseBuilder()
@@ -27,7 +27,7 @@ export const registerUserController = async (req, res) => {
 				)
 				.build()
 			return res.status(400).json(response)
-		} */
+		} 
 
 		if (!email) {
 			const response = new ResponseBuilder()
@@ -50,9 +50,9 @@ export const registerUserController = async (req, res) => {
 			expiresIn: '1d'
 		})
 
-		const url_verification = `http://localhost:${ENVIROMENT.BACKPORT}/api/auth/verify/${verificationToken}`
-
-		await enviarEmail({
+		const url_verification = `http://localhost:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}`
+        if(existentUser === null){
+            await enviarEmail({
 			to: email,
 			subject: 'Valida tu correo electronico',
 			html: `
@@ -62,6 +62,9 @@ export const registerUserController = async (req, res) => {
 			>Click Aqui</a>
 			`
 		})
+        }
+
+		
 
 
 		const newUser = new User({
