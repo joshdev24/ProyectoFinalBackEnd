@@ -63,19 +63,20 @@ export const registerUserController = async (req, res) => {
             .build()
             return res.status(400).json(response)
         }
-        if(UserRepository.obtenerPorEmail(email) == null){
-        await sendEmail({
-            to: email,
-            subject: 'Valida tu correo electronico',
-            html: `
-            <h1>Verificacion de correo electronico</h1>
-            <p>Da click en el boton de abajo para verificar</p>
-            <a 
-                style='background-color: 'black'; color: 'white'; padding: 5px; border-radius: 5px;'
-                href="${url_verification}"
-            >Click aqui</a>
-            `
-        })}
+        if (await UserRepository.obtenerPorEmail(email) == null) {
+            await sendEmail({
+                to: email,
+                subject: 'Valida tu correo electrónico',
+                html: `
+                    <h1>Verificación de correo electrónico</h1>
+                    <p>Haz clic en el botón de abajo para verificar tu correo:</p>
+                    <a 
+                        style="background-color: black; color: white; padding: 5px; border-radius: 5px; text-decoration: none;"
+                        href="${url_verification}"
+                    >Click aquí</a>
+                `
+            });
+        }
 
         const newUser = new User({
             name,
