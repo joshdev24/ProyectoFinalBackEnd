@@ -28,35 +28,6 @@ export const registerUserController = async (req, res) => {
             return res.status(400).json(response)
         }
 
-        if(!password){
-            const response = new ResponseBuilder()
-            .setOk(false)
-            .setStatus(400)
-            .setMessage('Bad request')
-            .setPayload(
-                {
-                    detail: 'El password no es valido'
-                }
-            )
-            .build()
-            return res.status(400).json(response)
-        }
-
-        const user = await UserRepository.obtenerPorEmail(email)
-        if(user){
-            const response = new ResponseBuilder()
-            .setOk(false)
-            .setStatus(400)
-            .setMessage('Bad request')
-            .setPayload(
-                {
-                    detail: 'El email ya esta registrado'
-                }
-            )
-            .build()
-            return res.status(400).json(response)
-        }
-
         const hashedPassword = await bcrypt.hash(password, 10)
         const verificationToken = jwt.sign(
             {
@@ -64,9 +35,9 @@ export const registerUserController = async (req, res) => {
             }, ENVIROMENT.JWT_SECRET, {
             expiresIn: '1d'
         })
-        const url_verification = `${ENVIROMENT.URL_FRONT}/api/auth/verify/${verificationToken}`
-        if(!user){
-                        await sendEmail({
+        const url_verification = `http://localhost:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}`
+        if (!User.findOne) {
+        await sendEmail({
             to: email,
             subject: 'Valida tu correo electronico',
             html: `
@@ -79,8 +50,6 @@ export const registerUserController = async (req, res) => {
             `
         })  
         }
-       
-        
         
 
         const newUser = new User({
