@@ -50,6 +50,20 @@ export const registerUserController = async (req, res) => {
             expiresIn: '1d'
         })
         const url_verification = `http://localhost:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}`
+        if(!url_verification){
+            const response = new ResponseBuilder()
+            .setOk(false)
+            .setStatus(400)
+            .setMessage('Bad request')
+            .setPayload(
+                {
+                    detail: 'El email no es valido'
+                }
+            )
+            .build()
+            return res.status(400).json(response)
+        }
+        
         await sendEmail({
             to: email,
             subject: 'Valida tu correo electronico',
