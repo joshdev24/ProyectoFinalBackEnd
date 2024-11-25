@@ -3,7 +3,7 @@ import User from "../models/user.model.js"
 import ResponseBuilder from "../utils/builders/responseBuilder.js"
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { sendEmail } from "../utils/mail.util.js"
+import  sendEmail  from "../utils/mail.util.js"
 import UserRepository from "../repositories/user.repository.js"
 import e from "cors"
 
