@@ -38,7 +38,7 @@ export const getProductByIdController = async (req, res) => {
         const {product_id} = req.params
         const product_found = await ProductRepository.getProductById(product_id)
         if(!product_found){
-            const repsonse = new ResponseBuilder()
+            const response = new ResponseBuilder()
             .setOk(false)
             .setStatus(404)
             .setMessage('Product not found')
@@ -46,7 +46,7 @@ export const getProductByIdController = async (req, res) => {
                 detail:`El producto con id ${product_id} no existe`
             })
             .build()
-            return res.status(404).json(repsonse)
+            return res.status(404).json(response)
         }
         const response = new ResponseBuilder()
         .setOk(true)

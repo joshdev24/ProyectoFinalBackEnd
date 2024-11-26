@@ -80,12 +80,16 @@ class ProductRepository {
             WHERE id = ?`;
 
         const [resultado] = await database_pool.execute(query, [product_id]);
+        if (!product_id) {
+            throw new Error('El ID del producto es inválido o no se ha proporcionado.');
+        }
 
         if (resultado.affectedRows > 0) {
             return { message: 'Producto desactivado correctamente', id: product_id };
         } else {
             return { message: 'Producto no encontrado', id: product_id };
         }
+        
     }
 }
 
