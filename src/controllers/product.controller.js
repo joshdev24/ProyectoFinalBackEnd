@@ -291,51 +291,70 @@ export const updateProductController = async (req, res) => {
 export const deleteProductController = async (req, res) => {
     try {
         const { product_id } = req.params
-
         const product_found = await ProductRepository.getProductById(product_id)
 
-        if(!product_found){
-            return res.sendStatus(404)
-        }
-
-        //Si no sos el admin y tampoco sos el dueño entonces NO podes estar aca
-      
-        const productoEliminado = await ProductRepository.deleteProduct(product_id)
-        if (!productoEliminado) {
+        if (!product_found) {
             const response = new ResponseBuilder()
                 .setOk(false)
                 .setStatus(404)
-                .setMessage('La solicitud fallo')
+                .setMessage('No se encontro el producto')
                 .setPayload({
-                    detail: 'No se pudo eliminar el producto, no se encontro el producto'
+                    detail: 'El producto no existe'
                 })
-                .build()
-            return res.status(404).json(response)
+                .build();
+            return res.status(404).json(response);
         }
+
+        if (req.user.role !== "admin" && req.user.id !== product_found.seller_id.toString()) {
+            const response = new ResponseBuilder()
+                .setOk(false)
+                .setStatus(400)
+                .setMessage('No esta autorizado para eliminar el producto')
+                .setPayload({
+                    detail: 'Se requiere las credenciales necesarias'
+                })
+                .build();
+            return res.status(400).json(response);
+        }
+
+        const deletedProduct = await ProductRepository.deleteProduct(product_id)
+
+
+        if (!deletedProduct) {
+            const response = new ResponseBuilder()
+                .setOk(false)
+                .setStatus(404)
+                .setMessage('No se pudo eliminar el producto')
+                .setPayload({
+                    detail: 'Producto no encontrado'
+                })
+                .build();
+            return res.status(404).json(response);
+
+        }
+
         const response = new ResponseBuilder()
-        .setOk(true)
-        .setStatus(200)
-        .setMessage('Producto eliminado con exito!')
-        .setPayload(
-            {
-                data: {
-                    title: productoEliminado.title,
-                }
-            }
-        )
-        .build()
-    res.json(response)
+            .setOk(true)
+            .setStatus(200)
+            .setMessage('Se elimino el producto')
+            .setPayload({
+                detail: "Poducto eliminado con exito"
+            })
+            .build();
+        return res.status(200).json(response);
+
     }
     catch (error) {
+        console.log(error);
         const response = new ResponseBuilder()
-        .setOk(false)
-        .setStatus(500)
-        .setMessage('Internal Server Error')
-        .setPayload({
-            detail: error.message
-        })
-        .build()
-    res.status(500).json(response)
+            .setOk(false)
+            .setStatus(400)
+            .setMessage('Internal Server Error')
+            .setPayload({
+                detail: error.message
+            })
+            .build();
+        return res.status(400).json(response);
     }
 }
 

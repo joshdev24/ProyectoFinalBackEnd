@@ -73,6 +73,20 @@ class ProductRepository {
     
         return ProductRepository.getProductById(product_id);
     }
+    static async deleteProduct(product_id) {
+        const query = `
+            UPDATE products 
+            SET active = false 
+            WHERE id = ?`;
+
+        const [resultado] = await database_pool.execute(query, [product_id]);
+
+        if (resultado.affectedRows > 0) {
+            return { message: 'Producto desactivado correctamente', id: product_id };
+        } else {
+            return { message: 'Producto no encontrado', id: product_id };
+        }
+    }
 }
 
 export default ProductRepository
