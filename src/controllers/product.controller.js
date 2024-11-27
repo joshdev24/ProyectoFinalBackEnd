@@ -177,116 +177,146 @@ export const createProductController = async (req, res) => {
 }
 export const updateProductController = async (req, res) => {
     try {
-        const { product_id } = req.params
-        const { title, price, stock, description, category } = req.body
-        const seller_id = req.user.id
+        const { product_id } = req.params;
+        const { title, price, stock, description, category } = req.body;
+        const seller_id = req.user.id; // Usuario autenticado
+        const isAdmin = req.user.role === 'admin'; // Suponiendo que tienes un campo 'role' en el usuario
+
+        // Validaciones de campos
         if (!title) {
             const response = new ResponseBuilder()
                 .setOk(false)
                 .setStatus(400)
-                .setMessage('Error de titulo')
+                .setMessage('Error de título')
                 .setPayload({
-                    detail: 'Titulo invalido o campo esta vacio'
+                    detail: 'Título inválido o campo vacío',
                 })
-                .build()
-            return res.status(400).json(response)
+                .build();
+            return res.status(400).json(response);
         }
-        if (!price && price < 1) {
+        if (!price || price < 1) {
             const response = new ResponseBuilder()
                 .setOk(false)
                 .setStatus(400)
                 .setMessage('Error de precio')
                 .setPayload({
-                    detail: 'Precio invalido o campo vacio, solo valor numerico permitido mayor a 0'
+                    detail: 'Precio inválido o campo vacío, solo valor numérico permitido mayor a 0',
                 })
-                .build()
-            return res.status(400).json(response)
+                .build();
+            return res.status(400).json(response);
         }
-        if (!stock && isNaN(stock)) {
+        if (!stock || isNaN(stock)) {
             const response = new ResponseBuilder()
                 .setOk(false)
                 .setStatus(400)
                 .setMessage('Error de stock')
                 .setPayload({
-                    detail: 'stock invalido o campo vacio, solo valor numerico permitido'
+                    detail: 'Stock inválido o campo vacío, solo valor numérico permitido',
                 })
-                .build()
-            return res.status(400).json(response)
+                .build();
+            return res.status(400).json(response);
         }
         if (!description) {
             const response = new ResponseBuilder()
                 .setOk(false)
                 .setStatus(400)
-                .setMessage('Error de descripcion')
+                .setMessage('Error de descripción')
                 .setPayload({
-                    detail: 'campo vacio, debe ingresar una descripcion'
+                    detail: 'Campo vacío, debe ingresar una descripción',
                 })
-                .build()
-            return res.status(400).json(response)
+                .build();
+            return res.status(400).json(response);
         }
         if (!category) {
             const response = new ResponseBuilder()
                 .setOk(false)
                 .setStatus(400)
-                .setMessage('Error de categoria')
+                .setMessage('Error de categoría')
                 .setPayload({
-                    detail: 'cateogria invalida o campo vacio'
+                    detail: 'Categoría inválida o campo vacío',
                 })
-                .build()
-            return res.status(400).json(response)
+                .build();
+            return res.status(400).json(response);
         }
 
-        const product_found = await ProductRepository.getProductById(product_id)
+        // Buscar el producto
+        const product_found = await ProductRepository.getProductById(product_id);
+        if (!product_found) {
+            const response = new ResponseBuilder()
+                .setOk(false)
+                .setStatus(404)
+                .setMessage('Producto no encontrado')
+                .setPayload({
+                    detail: 'No se encontró el producto con el ID especificado',
+                })
+                .build();
+            return res.status(404).json(response);
+        }
+
+        // Validar permisos: solo admin o el vendedor propietario del producto
+        if (!isAdmin && product_found.seller_id !== seller_id) {
+            const response = new ResponseBuilder()
+                .setOk(false)
+                .setStatus(403)
+                .setMessage('Acceso denegado')
+                .setPayload({
+                    detail: 'No tienes permiso para actualizar este producto',
+                })
+                .build();
+            return res.status(403).json(response);
+        }
+
+        // Actualizar el producto
         const newProduct = {
             title,
             price,
             stock,
             description,
-            category
-        }
+            category,
+        };
+        const productoActualizado = await ProductRepository.updateProduct(product_id, newProduct);
 
-        const productoActualizado = await ProductRepository.updateProduct(product_id, newProduct)
         if (!productoActualizado) {
             const response = new ResponseBuilder()
                 .setOk(false)
                 .setStatus(404)
                 .setMessage('Error al actualizar producto')
                 .setPayload({
-                    detail: 'Producto no encontrado'
+                    detail: 'Producto no encontrado',
                 })
-                .build()
-            return res.status(404).json(response)
+                .build();
+            return res.status(404).json(response);
         }
+
+        // Respuesta exitosa
         const response = new ResponseBuilder()
             .setOk(true)
             .setStatus(200)
-            .setMessage('Producto actualizado con exito!')
-            .setPayload(
-                {
-                    data: {
-                        title: newProduct.title,
-                        price: newProduct.price,
-                        stock: newProduct.stock,
-                        descripcion: newProduct.description ,
-                        category: newProduct.category
-                    }
-                }
-            )
-            .build()
-        res.json(response)
-    }
-    catch (error) {
+            .setMessage('Producto actualizado con éxito')
+            .setPayload({
+                data: {
+                    title: newProduct.title,
+                    price: newProduct.price,
+                    stock: newProduct.stock,
+                    descripcion: newProduct.description,
+                    category: newProduct.category,
+                },
+            })
+            .build();
+        res.json(response);
+    } catch (error) {
         const response = new ResponseBuilder()
             .setOk(false)
             .setStatus(500)
             .setMessage('Internal Server Error')
             .setPayload({
-                detail: error.message
+                detail: error.message,
             })
-            .build()
-        res.status(500).json(response)
+            .build();
+        res.status(500).json(response);
     }
-}
+};
+
 
 export const deleteProductController = async (req, res) => {
     try {

@@ -76,7 +76,7 @@ class ProductRepository {
     static async deleteProduct(product_id) {
         const query = `
             UPDATE products 
-            SET active = 0
+            SET active = false
             WHERE id = ?`;
 
         const [resultado] = await database_pool.execute(query, [product_id]);
