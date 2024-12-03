@@ -73,6 +73,7 @@ class ProductRepository {
     
         return ProductRepository.getProductById(product_id);
     }
+    
     static async deleteProduct(product_id) {
         const query = `
             UPDATE products 
