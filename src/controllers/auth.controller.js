@@ -35,7 +35,7 @@ export const registerUserController = async (req, res) => {
             }, ENVIROMENT.JWT_SECRET, {
             expiresIn: '1d'
         })
-        const url_verification = `http://localhost:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}`
+        const url_verification = `${ENVIROMENT.URL_FRONT}/api/auth/verify/${verificationToken}`
         
         await sendEmail({
             to: email,

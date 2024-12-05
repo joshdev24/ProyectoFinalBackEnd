@@ -19,6 +19,5 @@ const ENVIROMENT = {
     }
 }
 
-console.log(ENVIROMENT)
 
 export default ENVIROMENT
