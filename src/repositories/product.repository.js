@@ -21,10 +21,10 @@ class ProductRepository {
     }
 
     static async createProduct(product_data){
-        const {title, stock, price, description, seller_id, image_base_64} = product_data
+        const {title, stock, price, description, seller_id, category,image_base_64} = product_data
         const query = `
         INSERT INTO products 
-        (title, stock, price, description, seller_id, image_base_64, active) 
+        (title, stock, price, description, seller_id, category, image_base_64, active) 
         VALUES 
         ( ?, ?, ?, ?, ?, ?, true )`
         const [resultado] = await database_pool.execute(query, [
@@ -38,22 +38,25 @@ class ProductRepository {
             description, 
             seller_id, 
             image_base_64,
+            category,
             active: true
         }
     }
 
     static async updateProduct(product_id, product_data) {
-        const { title, stock, price, description, image_base_64 } = product_data;
+        const { title, stock, price, description, category, image_base_64 } = product_data;
     
         const updatedTitle = title !== undefined ? title : null;
         const updatedStock = stock !== undefined ? stock : null;
         const updatedPrice = price !== undefined ? price : null;
+        const updatedCategory = category !== undefined ? category : null;
         const updatedDescription = description !== undefined ? description : null;
         const updatedImageBase64 = image_base_64 !== undefined ? image_base_64 : null;
+
     
         const query = `
         UPDATE products 
-        SET title = ?, stock = ?, price = ?, description = ?, image_base_64 = ?
+        SET title = ?, stock = ?, price = ?, description = ?, category = ?, image_base_64 = ?
         WHERE id = ?
         `;
     
@@ -62,6 +65,7 @@ class ProductRepository {
             updatedStock,
             updatedPrice,
             updatedDescription,
+            updatedCategory,
             updatedImageBase64,
             product_id
         ]);
