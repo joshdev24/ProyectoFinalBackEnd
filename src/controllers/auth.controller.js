@@ -236,19 +236,25 @@ export const loginController = async (req, res) => {
 
 
 export const forgotPasswordController = async (req, res) => {
-    try {
-        const { email, userName } = req.user
-        const reset_token = jwt.sign({ email }, ENVIROMENT.JWT_SECRET, { expiresIn: '1h' })
-        const resetUrl = `${ENVIROMENT.URL_FRONT}/reset-password/${reset_token}`
-        await sendEmail({
+    try{
+        const {email} = req.body
+        //Validamos que llegue el email
+        console.log(email)
+        
+        const resetToken = jwt.sign({email}, ENVIROMENT.JWT_SECRET, {
+            expiresIn: '1h'
+        })
+        //TODO crear una url_front en el ENVIROMENT
+        const resetUrl = `${ENVIROMENT.URL_FRONT}/reset-password/${resetToken}`
+        sendEmail({
             to: email,
-            subject: 'Resetar contraseña',
+            subject: 'Restablecer contraseña',
             html: `
                 <div>
-                    <h1> Resetar contraseña</h1>
-                    <p>Hello ${userName}! you have requested to reset your password, please click the link below to reset your password</p>
-                    <a href=${resetUrl}>Click here to reset your password!</a>
-                </div>    
+                    <h1>Has solicitado restablecer tu contraseña</h1>
+                    <p>Has click en el enlace de abajo para restablecer tu contraseña</p>
+                    <a href='${resetUrl}'>Restablecer</a>
+                </div>
             `
         })
         const response = new ResponseBuilder()
