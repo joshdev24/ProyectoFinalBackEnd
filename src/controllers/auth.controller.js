@@ -236,40 +236,72 @@ export const loginController = async (req, res) => {
 
 
 export const forgotPasswordController = async (req, res) => {
-    try{
-        const {email} = req.body
-        //Validamos que llegue el email
-        console.log(email)
+    try {
+        const { email } = req.body;
         
-        const resetToken = jwt.sign({email}, ENVIROMENT.JWT_SECRET, {
+        if (!email) {
+            const response = new ResponseBuilder()
+                .setOk(false)
+                .setStatus(400)
+                .setMessage('Bad request')
+                .setPayload({
+                    detail: 'Email is required'
+                })
+                .build();
+            return res.status(400).json(response);
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            const response = new ResponseBuilder()
+                .setOk(false)
+                .setStatus(404)
+                .setMessage('User not found')
+                .setPayload({
+                    detail: 'No user found with this email'
+                })
+                .build();
+            return res.status(404).json(response);
+        }
+
+        const resetToken = jwt.sign({ email }, ENVIROMENT.JWT_SECRET, {
             expiresIn: '1h'
-        })
-        //TODO crear una url_front en el ENVIROMENT
-        const resetUrl = `${ENVIROMENT.URL_FRONT}/reset-password/${resetToken}`
-        sendEmail({
+        });
+        const resetUrl = `${ENVIROMENT.URL_FRONT}/reset-password/${resetToken}`;
+
+        await sendEmail({
             to: email,
             subject: 'Restablecer contraseña',
             html: `
                 <div>
                     <h1>Has solicitado restablecer tu contraseña</h1>
-                    <p>Has click en el enlace de abajo para restablecer tu contraseña</p>
+                    <p>Haz click en el enlace de abajo para restablecer tu contraseña</p>
                     <a href='${resetUrl}'>Restablecer</a>
                 </div>
             `
-        })
+        });
+
         const response = new ResponseBuilder()
-        response
-        .setOk(true)
-        .setStatus(200)
-        .setMessage('Se envio el correo')
-        .setPayload({
-            detail: 'Se envio un correo electronico con las instrucciones para restablecer la contraseña.'
-        })
-        .build()
-        return res.json(response)
-    }
-    catch(error){
-        //Manajer logica de error
+            .setOk(true)
+            .setStatus(200)
+            .setMessage('Se envió el correo')
+            .setPayload({
+                detail: 'Se envió un correo electrónico con las instrucciones para restablecer la contraseña.'
+            })
+            .build();
+        return res.json(response);
+
+    } catch (error) {
+        console.error('Error in forgotPasswordController:', error);
+        const response = new ResponseBuilder()
+            .setOk(false)
+            .setStatus(500)
+            .setMessage('Internal server error')
+            .setPayload({
+                detail: error.message
+            })
+            .build();
+        return res.status(500).json(response);
     }
 }
 
