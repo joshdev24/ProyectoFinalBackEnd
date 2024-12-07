@@ -22,17 +22,6 @@ export const getAllProductController = async (req, res) => {
     }
 }
 
-
-//recibo
-/* 
-params: id (el id del product)
-*/
-
-//Respondo
-/* 
-product (el producto encontrado)
-*/
-
 export const getProductByIdController = async (req, res) => {
     try{
         const {product_id} = req.params
@@ -68,7 +57,7 @@ export const getProductByIdController = async (req, res) => {
 export const createProductController = async (req, res) => {
     try {
 
-        const { title, price, stock, description, category, image } = req.body
+        const { title, price, stock, description, image } = req.body
         console.log(req.body)
         //ESTO ES CLAVE, el seller_id NO debe venir del body, debe venir en el req.user (que a su vez viene del token de login con los datos de la sesion del usuario)
         const seller_id = req.user.id
@@ -116,17 +105,6 @@ export const createProductController = async (req, res) => {
                 .build()
             return res.status(400).json(response)
         }
-        if (!category) {
-            const response = new ResponseBuilder()
-                .setOk(false)
-                .setStatus(400)
-                .setMessage('Error de categoria')
-                .setPayload({
-                    detail: 'cateogria invalida o campo vacio'
-                })
-                .build()
-            return res.status(400).json(response)
-        }
 
 
         if(image && Buffer.byteLength(image, 'base64') > 2 * 1024 * 1024){
@@ -138,7 +116,6 @@ export const createProductController = async (req, res) => {
             price,
             stock,
             description,
-            category,
             image_base_64: image,
             seller_id
         }
@@ -154,7 +131,6 @@ export const createProductController = async (req, res) => {
                         price: newProductSaved.price,
                         stock: newProductSaved.stock,
                         description: newProductSaved.description,
-                        category: newProductSaved.category,
                         id: newProductSaved._id
                     }
                 }
@@ -178,7 +154,7 @@ export const createProductController = async (req, res) => {
 export const updateProductController = async (req, res) => {
     try {
         const { product_id } = req.params;
-        const { title, price, stock, description, category } = req.body;
+        const { title, price, stock, description } = req.body;
         const seller_id = req.user.id; // Usuario autenticado
         const isAdmin = req.user.role === 'admin'; // Suponiendo que tienes un campo 'role' en el usuario
 
@@ -227,17 +203,6 @@ export const updateProductController = async (req, res) => {
                 .build();
             return res.status(400).json(response);
         }
-        if (!category) {
-            const response = new ResponseBuilder()
-                .setOk(false)
-                .setStatus(400)
-                .setMessage('Error de categoría')
-                .setPayload({
-                    detail: 'Categoría inválida o campo vacío',
-                })
-                .build();
-            return res.status(400).json(response);
-        }
 
         // Buscar el producto
         const product_found = await ProductRepository.getProductById(product_id);
@@ -272,7 +237,7 @@ export const updateProductController = async (req, res) => {
             price,
             stock,
             description,
-            category,
+
         };
         const productoActualizado = await ProductRepository.updateProduct(product_id, newProduct);
 
@@ -299,7 +264,6 @@ export const updateProductController = async (req, res) => {
                     price: newProduct.price,
                     stock: newProduct.stock,
                     descripcion: newProduct.description,
-                    category: newProduct.category,
                 },
             })
             .build();
