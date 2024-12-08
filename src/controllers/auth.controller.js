@@ -36,7 +36,7 @@ export const registerUserController = async (req, res) => {
             expiresIn: '1d'
         })
 
-        const url_verification = `${ENVIROMENT.URL_FRONT}/verify-mail/${verificationToken}`
+        const url_verification = `${ENVIROMENT.URL_FRONT}/email-verify/${verificationToken}`
         
         await sendEmail({
             to: email,
@@ -264,13 +264,25 @@ export const forgotPasswordController = async (req, res) => {
             return res.status(404).json(response);
         }
 
-        const resetToken = jwt.sign({ email }, ENVIROMENT.JWT_SECRET, {
+        if (!user.email) {
+            const response = new ResponseBuilder()
+                .setOk(false)
+                .setStatus(404)
+                .setMessage('User not found')
+                .setPayload({
+                    detail: 'No user found with this email'
+                })
+                .build();
+            return res.status(404).json(response);
+        }
+
+        const resetToken = jwt.sign({ email: user.email }, ENVIROMENT.JWT_SECRET, {
             expiresIn: '1h'
         });
-        const resetUrl = `${ENVIROMENT.URL_FRONT}/reset-password/${resetToken}`;
+        const resetUrl = `${ENVIROMENT.URL_FRONT}/reset-password/${resetToken}`
 
         await sendEmail({
-            to: email,
+            to: user.email,
             subject: 'Restablecer contraseña',
             html: `
                 <div>
@@ -292,7 +304,6 @@ export const forgotPasswordController = async (req, res) => {
         return res.json(response);
 
     } catch (error) {
-        console.error('Error in forgotPasswordController:', error);
         const response = new ResponseBuilder()
             .setOk(false)
             .setStatus(500)
