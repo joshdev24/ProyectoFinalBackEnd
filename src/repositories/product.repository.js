@@ -6,11 +6,18 @@ class ProductRepository {
         try {
             const query = 'SELECT * FROM products WHERE active = true';
             const [registros] = await database_pool.execute(query);
+    
+            if (!registros || registros.length === 0) {
+                throw new Error('No active products found.');
+            }
+    
             return registros;
         } catch (error) {
-            console.error('Error fetching products:', error);
+            console.error('Error fetching products:', error.message, error.stack);
+            throw new Error('Failed to fetch products. Please try again later.');
         }
     }
+    
 
     //Si queremos devolver null cuando no se encuentre
     static async getProductById (product_id){
