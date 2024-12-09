@@ -252,6 +252,17 @@ export const forgotPasswordController = async (req, res) => {
         }
 
         const user = await User.findOne({ email });
+        if (!user) {
+            const response = new ResponseBuilder()
+                .setOk(false)
+                .setStatus(404)
+                .setMessage('User not found')
+                .setPayload({
+                    detail: 'No user found with this email'
+                })
+                .build();
+            return res.status(404).json(response);
+        }
 
         if (!user.email) {
             const response = new ResponseBuilder()
@@ -268,7 +279,7 @@ export const forgotPasswordController = async (req, res) => {
         const reset_token = jwt.sign({ email: user.email }, ENVIROMENT.JWT_SECRET, {
             expiresIn: '1h'
         });
-         const resetUrl = `${ENVIROMENT.URL_FRONT}/reset-password/${reset_token}`
+        const resetUrl = `${ENVIROMENT.URL_FRONT}/reset-password/${reset_token}`
 
         await sendEmail({
             to: user.email,
