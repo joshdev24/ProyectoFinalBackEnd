@@ -280,6 +280,8 @@ export const forgotPasswordController = async (req, res) => {
             expiresIn: '1h'
         });
         const resetUrl = `${ENVIROMENT.URL_FRONT}/reset-password/${reset_token}`
+        console.log(resetUrl);
+        console.log(reset_token);
 
         await sendEmail({
             to: user.email,
