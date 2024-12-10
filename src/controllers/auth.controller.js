@@ -29,27 +29,20 @@ export const registerUserController = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10)
         const verificationToken = jwt.sign(
-            {
-                email: email
-            }, ENVIROMENT.JWT_SECRET, {
-            expiresIn: '30min'
-        })
-
-        const url_verification = `${ENVIROMENT.URL_FRONT}/email-verify/${verificationToken}`
-
-        
+            { email: email },
+            ENVIROMENT.JWT_SECRET,
+            { expiresIn: '1d' }
+        )
+        const verificationUrl = `${ENVIROMENT.URL_FRONT}/email-verify/${verificationToken}`
         await sendEmail({
             to: email,
-            subject: 'Valida tu correo electronico',
+            subject: 'Email Verification',
             html: `
-            <h1>Verificacion de correo electronico</h1>
-            <p>Da click en el boton de abajo para verificar</p>
-            <a 
-                style='background-color: 'black'; color: 'white'; padding: 5px; border-radius: 5px;'
-                href="${url_verification}"
-            >Click aqui</a>
+                <h1>Verify Your Email</h1>
+                <p>Hello ${userName}! we are very happy that you have joined, before you start chatting we need to verify your account by clicking on the following link </p>
+                <a href=${verificationUrl}>Click here to verify!</a>
             `
-        })  
+        })
         
         
 
