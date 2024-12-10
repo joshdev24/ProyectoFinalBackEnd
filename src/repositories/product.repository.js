@@ -2,7 +2,7 @@ import database_pool from "../db/config_msql.js";
 import Product from "../models/product.model.js";
 
 class ProductRepository {
-    async getProducts() {
+    static async getProducts() {
         try {
             const [products] = await pool.execute('SELECT * FROM products');
             return products;
