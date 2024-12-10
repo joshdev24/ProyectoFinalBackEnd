@@ -33,7 +33,7 @@ export const registerUserController = async (req, res) => {
             {
                 email: email
             }, ENVIROMENT.JWT_SECRET, {
-            expiresIn: '1d'
+            expiresIn: '30min'
         })
 
         const url_verification = `${ENVIROMENT.URL_FRONT}/email-verify/${verificationToken}`
@@ -93,8 +93,8 @@ export const registerUserController = async (req, res) => {
 
 export const verifyMailValidationTokenController = async (req, res) => {
     try{
-        const {verification_token} = req.params
-        if(!verification_token){
+        const {verificationToken} = req.params
+        if(!verificationToken){
             const response = new ResponseBuilder().setOk(false)
             .setStatus(400)
             .setPayload({
@@ -106,7 +106,7 @@ export const verifyMailValidationTokenController = async (req, res) => {
         //Verificamos la firma del token, debe ser la misma que mi clave secreta, eso asegura que este token sea emitido por mi servidor
         //Si fallara la lectura/verificacion/expiracion hara un throw
         //La constante decoded tiene el payload de mi token
-        const decoded = jwt.verify(verification_token, ENVIROMENT.JWT_SECRET)
+        const decoded = jwt.verify(verificationToken, ENVIROMENT.JWT_SECRET)
 
         //Busco al usuario en mi DB por email
         const user = await User.findOne({email: decoded.email})
