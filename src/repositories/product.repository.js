@@ -2,18 +2,12 @@ import database_pool from "../db/config_msql.js";
 import Product from "../models/product.model.js";
 
 class ProductRepository {
-    static async getProducts() {
+    async getProducts() {
         try {
-            const query = 'SELECT * FROM products WHERE active = true';
-            const [registros] = await database_pool.execute(query);
-    
-            if (!registros || registros.length === 0) {
-                throw new Error('No active products found.');
-            }
-    
-            return registros;
+            const [products] = await pool.execute('SELECT * FROM products');
+            return products;
         } catch (error) {
-            console.error('Error fetching products:', error.message, error.stack);
+            console.error('Error fetching products:', error);
             throw new Error('Failed to fetch products. Please try again later.');
         }
     }
