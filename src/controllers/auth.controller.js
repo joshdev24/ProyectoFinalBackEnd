@@ -39,7 +39,7 @@ export const registerUserController = async (req, res) => {
             subject: 'Email Verification',
             html: `
                 <h1>Verify Your Email</h1>
-                <p>Hello ${userName}! we are very happy that you have joined, before you start chatting we need to verify your account by clicking on the following link </p>
+                <p>Hello ${name}! we are very happy that you have joined, before you start chatting we need to verify your account by clicking on the following link </p>
                 <a href=${verificationUrl}>Click here to verify!</a>
             `
         })
