@@ -2,29 +2,20 @@ import database_pool from "../db/config_msql.js";
 import Product from "../models/product.model.js";
 
 class ProductRepository {
-    static async getProducts() {
-        try {
-            const query = 'SELECT * FROM products WHERE active = true';
-            const [registros] = await database_pool.execute(query);
-    
-            if (!registros || registros.length === 0) {
-                throw new Error('No active products found.');
-            }
-    
-            return registros;
-        } catch (error) {
-            console.error('Error fetching products:', error.message, error.stack);
-            throw new Error('Failed to fetch products. Please try again later.');
-        }
+    static async getAllProducts (){
+        //Se obtiene un array con [queryResult, columns]
+        const [rows] = await database_pool.execute(`SELECT * FROM Products WHERE active = true`)
+        return rows
     }
-    
 
-    //Si queremos devolver null cuando no se encuentre
-    static async getProductById (product_id){
-        const query = `SELECT * FROM products WHERE id = ?`
-        //Execute espera como segundo parametro un array con los valores que quieras reemplazar en la query
-        const [registros] = await database_pool.execute(query, [product_id])
-        return registros.length > 0 ? registros[0] : null
+    /**
+     * Retrieves a product by its id
+     * @param {string} product_id - id of the product to retrieve
+     * @returns {Promise<Product>} - a Promise that resolves to the product with the given id
+     */
+    static async getProductById(product_id){
+        const [rows] = await database_pool.execute('SELECT * FROM Products WHERE id = ?', [product_id])
+        return rows.length > 0 ? rows[0] : null
     }
 
     static async createProduct(product_data){
