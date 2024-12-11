@@ -276,19 +276,22 @@ export const forgotPasswordController = async (req, res) => {
             return res.status(404).json(response);
         }
 
-        const reset_token = jwt.sign({ email }, ENVIROMENT.JWT_SECRET, { expiresIn: '1h' })
-        const resetUrl = `${ENVIROMENT.URL_FRONT}/reset-password/${reset_token}`
+        const reset_token = jwt.sign({ email: user.email }, ENVIROMENT.JWT_SECRET, {
+            expiresIn: '1h'
+        });
+        const resetUrl = `${ENVIROMENT.URL_FRONT}/reset-password/${reset_token}`;
+
         await sendEmail({
-            to: email,
-            subject: 'Password Reset',
+            to: user.email,
+            subject: 'Restablecer contraseña',
             html: `
                 <div>
-                    <h1>Password Reset</h1>
-                    <p>Hello ${userName}! you have requested to reset your password, please click the link below to reset your password</p>
-                    <a href=${resetUrl}>Click here to reset your password!</a>
-                </div>    
+                    <h1>Has solicitado restablecer tu contraseña</h1>
+                    <p>Haz click en el enlace de abajo para restablecer tu contraseña</p>
+                    <a href='${resetUrl}'>Restablecer</a>
+                </div>
             `
-        })
+        });
 
         const response = new ResponseBuilder()
             .setOk(true)
