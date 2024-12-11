@@ -4,35 +4,27 @@ import Product from "../models/product.model.js";
 class ProductRepository {
     static async getProducts() {
         try {
-            const [products] = await database_pool.execute('SELECT * FROM products');
-            return products;
+            const query = 'SELECT * FROM products WHERE active = true';
+            const [registros] = await database_pool.execute(query);
+    
+            if (!registros || registros.length === 0) {
+                throw new Error('No active products found.');
+            }
+    
+            return registros;
         } catch (error) {
-            console.error('Error fetching products:', error);
+            console.error('Error fetching products:', error.message, error.stack);
             throw new Error('Failed to fetch products. Please try again later.');
         }
     }
     
 
     //Si queremos devolver null cuando no se encuentre
-    static async getProductById(product_id) {
-        if (!product_id) {
-            throw new Error("El ID del producto es requerido");
-        }
-    
-        const query = `SELECT * FROM products WHERE id = ?`;
-    
-        try {
-            const [registros] = await database_pool.execute(query, [product_id]);
-    
-            if (registros.length === 0) {
-                return null; // No se encontró el producto
-            }
-    
-            return registros[0]; // Devuelve el producto encontrado
-        } catch (error) {
-            console.error(`Error al obtener el producto con ID ${product_id}:`, error);
-            throw new Error("Error al obtener el producto. Por favor, inténtelo de nuevo más tarde.");
-        }
+    static async getProductById (product_id){
+        const query = `SELECT * FROM products WHERE id = ?`
+        //Execute espera como segundo parametro un array con los valores que quieras reemplazar en la query
+        const [registros] = await database_pool.execute(query, [product_id])
+        return registros.length > 0 ? registros[0] : null
     }
 
     static async createProduct(product_data){

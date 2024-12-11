@@ -7,6 +7,7 @@ import authRouter from "./router/auth.router.js";
 import statusRouter from "./router/status.router.js";
 import { verifyApikeyMiddleware } from "./middleware/auth.middleware.js";
 import database_pool from "./db/config_msql.js";
+import ProductRepository from "./repositories/product.repository.js";
 
 
 const app = express();
