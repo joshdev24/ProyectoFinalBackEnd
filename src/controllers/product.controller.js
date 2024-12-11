@@ -4,7 +4,7 @@ import ResponseBuilder from "../utils/builders/responseBuilder.js"
 
 export const getAllProductController = async (req, res) => {
     try{
-        const products = await ProductRepository.getAllProducts()
+        const products = await ProductRepository.getProducts()
         console.log(products)
 
         const response = new ResponseBuilder()
