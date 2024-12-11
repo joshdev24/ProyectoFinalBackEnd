@@ -1,104 +1,88 @@
-import database_pool from "../db/config_msql.js";
-import Product from "../models/product.model.js";
+const mongoose = require('mongoose');
+const Product = require('../models/product.model'); // Asegúrate de que esta ruta sea correcta
 
 class ProductRepository {
-    static async getProducts() {
+    // Obtener todos los productos activos
+    static async getProducts(filters = {}) {
         try {
-            const query = 'SELECT * FROM products WHERE active = true';
-            const [registros] = await database_pool.execute(query);
-    
-            if (!registros || registros.length === 0) {
-                throw new Error('No active products found.');
-            }
-    
-            return registros;
+            const query = { active: true, ...filters };
+            return await Product.find(query);
         } catch (error) {
-            console.error('Error fetching products:', error.message, error.stack);
-            throw new Error('Failed to fetch products. Please try again later.');
-        }
-    }
-    
-
-    //Si queremos devolver null cuando no se encuentre
-    static async getProductById (product_id){
-        const query = `SELECT * FROM products WHERE id = ?`
-        //Execute espera como segundo parametro un array con los valores que quieras reemplazar en la query
-        const [registros] = await database_pool.execute(query, [product_id])
-        return registros.length > 0 ? registros[0] : null
-    }
-
-    static async createProduct(product_data){
-        const {title, stock, price, description, seller_id, image_base_64} = product_data
-        const query = `
-        INSERT INTO products 
-        (title, stock, price, description, seller_id,  image_base_64, active) 
-        VALUES 
-        ( ?, ?, ?, ?, ?, ?, true )`
-        const [resultado] = await database_pool.execute(query, [
-            title, stock, price, description, seller_id, image_base_64
-        ])
-        return {
-            id: resultado.insertId,
-            title, 
-            stock, 
-            price, 
-            description,
-            seller_id, 
-            image_base_64,
-            active: true
+            console.error('Error al obtener productos:', error);
+            throw new Error('No se pudieron obtener los productos.');
         }
     }
 
-    static async updateProduct(product_id, product_data) {
-        const { title, stock, price, description, image_base_64 } = product_data;
-    
-        const updatedTitle = title !== undefined ? title : null;
-        const updatedStock = stock !== undefined ? stock : null;
-        const updatedPrice = price !== undefined ? price : null;
-        const updatedDescription = description !== undefined ? description : null;
-        const updatedImageBase64 = image_base_64 !== undefined ? image_base_64 : null;
-    
-        const query = `
-        UPDATE products 
-        SET title = ?, stock = ?, price = ?, description = ?, image_base_64 = ?
-        WHERE id = ?
-        `;
-    
-        const [resultado] = await database_pool.execute(query, [
-            updatedTitle,
-            updatedStock,
-            updatedPrice,
-            updatedDescription,
-            updatedImageBase64,
-            product_id
-        ]);
-    
-        // Optionally, check if the update was successful
-        if (resultado.affectedRows === 0) {
-            throw new Error("Product not found or no changes made.");
+    // Obtener un producto por ID
+    static async getProductById(id) {
+        try {
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                throw new Error('ID no válido.');
+            }
+
+            const product = await Product.findById(id);
+
+            if (!product) {
+                throw new Error('Producto no encontrado.');
+            }
+
+            return product;
+        } catch (error) {
+            console.error(`Error al obtener producto con ID ${id}:`, error);
+            throw new Error('No se pudo obtener el producto.');
         }
-    
-        return ProductRepository.getProductById(product_id);
     }
-    
-    static async deleteProduct(product_id) {
-        const query = `
-            UPDATE products 
-            SET active = false
-            WHERE id = ?`;
 
-        const [resultado] = await database_pool.execute(query, [product_id]);
-        if (!product_id) {
-            throw new Error('El ID del producto es inválido o no se ha proporcionado.');
+    // Crear un nuevo producto
+    static async createProduct(product_data) {
+        try {
+            const new_product = new Product(product_data);
+            return await new_product.save();
+        } catch (error) {
+            console.error('Error al crear producto:', error);
+            throw new Error('No se pudo crear el producto.');
         }
+    }
 
-        if (resultado.affectedRows > 0) {
-            return { message: 'Producto desactivado correctamente', id: product_id };
-        } else {
-            return { message: 'Producto no encontrado', id: product_id };
+    // Actualizar un producto existente
+    static async updateProduct(id, new_product_data) {
+        try {
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                throw new Error('ID no válido.');
+            }
+
+            const updated_product = await Product.findByIdAndUpdate(id, new_product_data, { new: true });
+
+            if (!updated_product) {
+                throw new Error('Producto no encontrado para actualizar.');
+            }
+
+            return updated_product;
+        } catch (error) {
+            console.error(`Error al actualizar producto con ID ${id}:`, error);
+            throw new Error('No se pudo actualizar el producto.');
         }
-        
+    }
+
+    // Eliminar (marcar como inactivo) un producto
+    static async deleteProduct(id) {
+        try {
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                throw new Error('ID no válido.');
+            }
+
+            const deleted_product = await Product.findByIdAndUpdate(id, { active: false }, { new: true });
+
+            if (!deleted_product) {
+                throw new Error('Producto no encontrado para eliminar.');
+            }
+
+            return deleted_product;
+        } catch (error) {
+            console.error(`Error al eliminar producto con ID ${id}:`, error);
+            throw new Error('No se pudo eliminar el producto.');
+        }
     }
 }
 
-export default ProductRepository
+export default ProductRepository;

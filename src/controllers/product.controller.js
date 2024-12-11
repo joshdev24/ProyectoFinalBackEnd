@@ -23,34 +23,51 @@ export const getAllProductController = async (req, res) => {
 }
 
 export const getProductByIdController = async (req, res) => {
-    try{
-        const {product_id} = req.params
-        const product_found = await ProductRepository.getProductById(product_id)
-        if(!product_found){
+    try {
+        const { id } = req.params;
+
+        // Llamada al repositorio para obtener el producto por ID
+        const product_found = await ProductRepository.getProductById(id);
+
+        if (!product_found) {
+            // Construcción de respuesta para producto no encontrado
             const response = new ResponseBuilder()
-            .setOk(false)
-            .setStatus(404)
-            .setMessage('Product not found')
-            .setPayload({
-                detail:`El producto con id ${product_id} no existe`
-            })
-            .build()
-            return res.status(404).json(response)
+                .setOk(false)
+                .setStatus(404)
+                .setMessage('Product not found')
+                .setPayload({
+                    detail: `El producto con id ${id} no existe`,
+                })
+                .build();
+            return res.status(404).json(response);
         }
+
+        // Construcción de respuesta para éxito
         const response = new ResponseBuilder()
-        .setOk(true)
-        .setStatus(200)
-        .setMessage('Productos obtenidos')
-        .setPayload({
-            product: product_found
-        })
-        .build()
-        return res.json(response)
+            .setOk(true)
+            .setStatus(200)
+            .setMessage('Producto obtenido exitosamente')
+            .setPayload({
+                product: product_found,
+            })
+            .build();
+        return res.json(response);
+    } catch (error) {
+        console.error('Error al obtener producto:', error.message);
+
+        // Construcción de respuesta para error interno
+        const response = new ResponseBuilder()
+            .setOk(false)
+            .setStatus(500)
+            .setMessage('Error interno del servidor')
+            .setPayload({
+                detail: error.message,
+            })
+            .build();
+        return res.status(500).json(response);
     }
-    catch(error){
-        console.error(error.message)
-    }
-}
+};
+
 
 
 
@@ -153,7 +170,7 @@ export const createProductController = async (req, res) => {
 }
 export const updateProductController = async (req, res) => {
     try {
-        const { product_id } = req.params;
+        const { id } = req.params;
         const { title, price, stock, description } = req.body;
         const seller_id = req.user.id; // Usuario autenticado
         const isAdmin = req.user.role === 'admin'; // Suponiendo que tienes un campo 'role' en el usuario
@@ -205,7 +222,7 @@ export const updateProductController = async (req, res) => {
         }
 
         // Buscar el producto
-        const product_found = await ProductRepository.getProductById(product_id);
+        const product_found = await ProductRepository.getProductById(id);
         if (!product_found) {
             const response = new ResponseBuilder()
                 .setOk(false)
@@ -239,7 +256,7 @@ export const updateProductController = async (req, res) => {
             description,
 
         };
-        const productoActualizado = await ProductRepository.updateProduct(product_id, newProduct);
+        const productoActualizado = await ProductRepository.updateProduct(id, newProduct);
 
         if (!productoActualizado) {
             const response = new ResponseBuilder()
@@ -284,8 +301,8 @@ export const updateProductController = async (req, res) => {
 
 export const deleteProductController = async (req, res) => {
     try {
-        const { product_id } = req.params
-        const product_found = await ProductRepository.getProductById(product_id)
+        const { id } = req.params
+        const product_found = await ProductRepository.getProductById(id )
 
         if (!product_found) {
             const response = new ResponseBuilder()
@@ -311,7 +328,7 @@ export const deleteProductController = async (req, res) => {
             return res.status(400).json(response);
         }
 
-        const deletedProduct = await ProductRepository.deleteProduct(product_id)
+        const deletedProduct = await ProductRepository.deleteProduct(id)
 
 
         if (!deletedProduct) {
