@@ -7,7 +7,6 @@ import authRouter from "./router/auth.router.js";
 import statusRouter from "./router/status.router.js";
 import { verifyApikeyMiddleware } from "./middleware/auth.middleware.js";
 import database_pool from "./db/config_msql.js";
-import ProductRepository from "./repositories/product.repository.js";
 
 
 const app = express();
@@ -23,7 +22,8 @@ app.use('/api/status', statusRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/products', productRouter)
 
-ProductRepository.getProducts()
+
+
 
 
 app.listen(PORT, () => {
