@@ -4,7 +4,7 @@ import Product from "../models/product.model.js";
 class ProductRepository {
     static async getProducts() {
         try {
-            const [products] = await pool.execute('SELECT * FROM products');
+            const [products] = await database_pool.execute('SELECT * FROM products');
             return products;
         } catch (error) {
             console.error('Error fetching products:', error);
