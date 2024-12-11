@@ -29,14 +29,14 @@ export const registerUserController = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
-        const validationToken = jwt.sign(
+        const verificationToken = jwt.sign(
             {
                 email: email
             }, ENVIROMENT.JWT_SECRET, {
             expiresIn: '30min'
         })
 
-        const redirectUrl = `${ENVIROMENT.FRONTEND_URL}/verify-email/` + validationToken
+        const url_verification = `${ENVIROMENT.URL_FRONT}/email-verify/${verificationToken}`
         
         await sendEmail({
             to: email,
@@ -46,7 +46,7 @@ export const registerUserController = async (req, res) => {
             <p>Da click en el boton de abajo para verificar</p>
             <a 
                 style='background-color: 'black'; color: 'white'; padding: 5px; border-radius: 5px;'
-                href="${redirectUrl}"
+                href="${url_verification}"
             >Click aqui</a>
             `
         })  
