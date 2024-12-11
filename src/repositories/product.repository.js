@@ -28,7 +28,6 @@ class ProductRepository {
             return product;
         } catch (error) {
             console.error(`Error al obtener producto con ID ${id}:`, error);
-            console.log(id)
             throw new Error('No se pudo obtener el producto.');
         }
     }
