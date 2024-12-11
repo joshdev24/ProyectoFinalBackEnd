@@ -8,7 +8,7 @@ const database_pool = mysql.createPool({
     user:ENVIROMENT.MYSQL.USERNAME,
     password:ENVIROMENT.MYSQL.PASSWORD,
     database:ENVIROMENT.MYSQL.DATABASE,
-    connectionLimit: 10,
+    connectionLimit: 200,
 
 })
 
