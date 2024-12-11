@@ -1,6 +1,5 @@
-const mongoose = require('mongoose');
-const Product = require('../models/product.model'); // Asegúrate de que esta ruta sea correcta
-
+import mongoose from 'mongoose';
+import Product from '../models/product.model.js';
 class ProductRepository {
     // Obtener todos los productos activos
     static async getProducts(filters = {}) {
