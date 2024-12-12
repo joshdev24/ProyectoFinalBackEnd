@@ -4,14 +4,14 @@ import ResponseBuilder from "../utils/builders/responseBuilder.js"
 
 export const getAllProductController = async (req, res) => {
     try{
-        const products_from_db = await ProductRepository.getProducts()
+        const products = await ProductRepository.getProducts()
 
         const response = new ResponseBuilder()
         .setOk(true)
         .setStatus(200)
         .setMessage('Productos obtenidos')
         .setPayload({
-            products: products_from_db
+            products: products
         })
         .build()
         return res.json(response)
