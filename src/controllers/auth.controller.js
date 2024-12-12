@@ -13,7 +13,6 @@ import UserRepository from "../repositories/user.repository.js"
 export const registerUserController = async (req, res) => {
     try{
         const {name, email, password} = req.body
-        /* Hacer validacion */
         if(!email){
             const response = new ResponseBuilder()
             .setOk(false)
@@ -33,10 +32,10 @@ export const registerUserController = async (req, res) => {
             {
                 email: email
             }, ENVIROMENT.JWT_SECRET, {
-            expiresIn: '30min'
-        })
+            expiresIn: '5d'
+        });
 
-        const url_verification = `${ENVIROMENT.URL_FRONT}/email-verify/${verificationToken}`
+        const url_verification = `${ENVIROMENT.URL_FRONT}/verify/${verificationToken}`
         
         await sendEmail({
             to: email,
