@@ -36,7 +36,7 @@ export const registerUserController = async (req, res) => {
         });
 
         const url_verification = `${ENVIROMENT.URL_FRONT}/verify/${verificationToken}`
-        console.log(url_verification);
+        console.log( "URL BACKEND" , url_verification);
         
         await sendEmail({
             to: email,
