@@ -35,7 +35,7 @@ export const registerUserController = async (req, res) => {
             expiresIn: '5d'
         });
 
-        const url_verification = `${ENVIROMENT.URL_FRONT}/api/auth/verify/${verificationToken}`
+        const url_verification = `${ENVIROMENT.URL_FRONT}/verify/${verificationToken}`
         console.log( "URL BACKEND" , url_verification);
         
         await sendEmail({
