@@ -35,7 +35,7 @@ export const registerUserController = async (req, res) => {
             expiresIn: '5d'
         });
 
-        const url_verification = `${ENVIROMENT.URL_FRONT}/verify/${verificationToken}`
+        const url_verification = `${ENVIROMENT.URL_FRONT}/api/auth/verify/${verificationToken}`
         console.log( "URL BACKEND" , url_verification);
         
         await sendEmail({
@@ -280,6 +280,7 @@ export const forgotPasswordController = async (req, res) => {
             expiresIn: '1h'
         });
         const resetUrl = `${ENVIROMENT.URL_FRONT}/reset-password/${reset_token}`;
+        console.log("URL RESET", resetUrl);
 
         await sendEmail({
             to: user.email,
