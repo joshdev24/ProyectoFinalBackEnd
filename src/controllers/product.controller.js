@@ -161,7 +161,7 @@ export const createProductController = async (req, res) => {
 export const updateProductController = async (req, res) => {
     try {
         const { product_id } = req.params;
-        const { title, price, stock, description } = req.body;
+        const { title, price, stock, description, image } = req.body;
         const seller_id = req.user.id; // Usuario autenticado
         const isAdmin = req.user.role === 'admin'; // Suponiendo que tienes un campo 'role' en el usuario
 
@@ -244,6 +244,8 @@ export const updateProductController = async (req, res) => {
             price,
             stock,
             description,
+            image_base_64: image
+
 
         };
         const productoActualizado = await ProductRepository.updateProduct(product_id, newProduct);
@@ -271,6 +273,8 @@ export const updateProductController = async (req, res) => {
                     price: newProduct.price,
                     stock: newProduct.stock,
                     descripcion: newProduct.description,
+                    image_base_64: newProduct.image_base_64
+
                 },
             })
             .build();
