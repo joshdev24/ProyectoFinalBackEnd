@@ -32,10 +32,10 @@ export const registerUserController = async (req, res) => {
             {
                 email: email
             }, ENVIROMENT.JWT_SECRET, {
-            expiresIn: '5d'
+            expiresIn: '1d'
         });
 
-        const url_verification = `${ENVIROMENT.URL_FRONT}/verify/${verificationToken}`
+        const VerifyCode = `${verificationToken}`
         console.log( "URL BACKEND" , url_verification);
         
         await sendEmail({
@@ -43,11 +43,8 @@ export const registerUserController = async (req, res) => {
             subject: 'Valida tu correo electronico',
             html: `
             <h1>Verificacion de correo electronico</h1>
-            <p>Da click en el boton de abajo para verificar</p>
-            <a 
-                style='background-color: 'black'; color: 'white'; padding: 5px; border-radius: 5px;'
-                href="${url_verification}"
-            >Click aqui</a>
+            <p>Tu token de verificacion es: ${VerifyCode}</p>
+            <p>Ingresalo en la pagina de validacion para verificar tu correo</p>
             `
         })  
         
