@@ -272,7 +272,7 @@ export const forgotPasswordController = async (req, res) => {
             return res.status(404).json(response);
         }
 
-        const reset_token = jwt.sign({ email: user.email, accion: 'reset' }, ENVIROMENT.JWT_RESET, {
+        const reset_token = jwt.sign({ email: user.email, accion: 'reset' }, ENVIROMENT.JWT_SECRET, {
             expiresIn: '1h'
         });
         
@@ -340,7 +340,7 @@ export const resetTokenController = async (req, res) => {
                 .build()
             return res.json(response)
         }
-        const decoded = jwt.verify(reset_token, ENVIROMENT.JWT_RESET)
+        const decoded = jwt.verify(reset_token, ENVIROMENT.JWT_SECRET)
         console.log(decoded);
 
 
