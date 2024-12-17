@@ -275,8 +275,8 @@ export const forgotPasswordController = async (req, res) => {
         const reset_token = jwt.sign({ email: user.email }, ENVIROMENT.JWT_SECRET, {
             expiresIn: '1h'
         });
-        const resetUrl = `${ENVIROMENT.URL_FRONT}/reset-password/${reset_token}`;
-        console.log("URL RESET", resetUrl);
+        const resetUrl = `${reset_token}`;
+       
 
         await sendEmail({
             to: user.email,
@@ -284,8 +284,8 @@ export const forgotPasswordController = async (req, res) => {
             html: `
                 <div>
                     <h1>Has solicitado restablecer tu contraseña</h1>
-                    <p>Haz click en el enlace de abajo para restablecer tu contraseña</p>
-                    <a href='${resetUrl}'>Restablecer</a>
+                    <p>Tu codigo para resetar tu contraseña es: ${reset_token}</p>
+                    Ingresalo en la pagina de restablecimiento de contraseña
                 </div>
             `
         });
