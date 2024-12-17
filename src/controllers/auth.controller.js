@@ -36,7 +36,6 @@ export const registerUserController = async (req, res) => {
         });
 
         const VerifyCode = `${verificationToken}`
-        console.log( "URL BACKEND" , url_verification);
         
         await sendEmail({
             to: email,
