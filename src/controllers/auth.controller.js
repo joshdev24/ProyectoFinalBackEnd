@@ -340,7 +340,7 @@ export const resetTokenController = async (req, res) => {
                 .build()
             return res.json(response)
         }
-        const decoded = jwt.verify(reset_token, ENVIROMENT.JWT_SECRET)
+        const decoded = jwt.verify(reset_token, ENVIROMENT.JWT_RESET)
         console.log(decoded);
 
 
