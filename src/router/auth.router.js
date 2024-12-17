@@ -15,7 +15,6 @@ authRouter.post('/register',  registerUserController)
 authRouter.get('/verify/:verificationToken', verifyMailValidationTokenController)
 authRouter.post('/login',  loginController)
 authRouter.post('/forgot-password', forgotPasswordController)
-authRouter.post('/reset-password/:reset_token' )
 authRouter.put('/reset-password/:reset_token',  resetTokenController)
 
 
