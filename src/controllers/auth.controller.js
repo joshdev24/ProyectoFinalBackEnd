@@ -30,7 +30,7 @@ export const registerUserController = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10)
         const verificationToken = jwt.sign(
             {
-                email: email
+                email: email, accion: 'verificacion'
             }, ENVIROMENT.JWT_SECRET, {
             expiresIn: '1d'
         });
@@ -272,10 +272,9 @@ export const forgotPasswordController = async (req, res) => {
             return res.status(404).json(response);
         }
 
-        const reset_token = jwt.sign({ email: user.email }, ENVIROMENT.JWT_SECRET, {
+        const reset_token = jwt.sign({ email: user.email, accion: 'reset' }, ENVIROMENT.JWT_SECRET, {
             expiresIn: '1h'
         });
-        const resetUrl = `${reset_token}`;
        
 
         await sendEmail({
