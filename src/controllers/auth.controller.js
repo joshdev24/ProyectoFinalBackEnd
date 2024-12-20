@@ -42,10 +42,10 @@ export const registerUserController = async (req, res) => {
             subject: 'Valida tu correo electronico',
             html: `
            <div style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9; padding: 20px; border-radius: 10px; width: 100%; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-            <h1 style="text-align: center; color: #4CAF50;">Verificación de correo electrónico</h1>
+            <h1 style="text-align: center; color: #4CAF50;" >Verificación de correo electrónico</h1>
          <p style="text-align: center; font-size: 16px; color: #555;">Tu código de verificación es:</p>
+         <p style="text-align: center; font-size: 16px; color: #555;"> Ingresa este código en la página de validación para verificar tu correo electrónico.</p>
     <p style="text-align: center; font-size: 24px; font-weight: bold; color: #4CAF50; margin: 20px 0;">${VerifyCode}</p>
-    <p style="text-align: center; font-size: 16px; color: #555;">Ingresa este código en la página de validación para verificar tu correo electrónico.</p>
     <p style="text-align: center; font-size: 14px; color: #888; margin-top: 20px;">Si no solicitaste esta verificación, puedes ignorar este mensaje.</p>
 </div>
 
@@ -149,6 +149,11 @@ export const verifyMailValidationTokenController = async (req, res) => {
             })
             .build()
         res.json(response)
+        await sendEmail({
+            to: user.email,
+            subject: 'Correo electronico verificado',
+            html: ` <p style="text-align: center; font-size: 16px; color: #555;">Tu correo electronico ha sido verificado con exito</p>`
+        })
     }
     catch (error) {
         console.error(error)
