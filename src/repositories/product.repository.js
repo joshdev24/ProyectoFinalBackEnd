@@ -50,36 +50,53 @@ class ProductRepository {
     }
 
     static async updateProduct(product_id, product_data) {
-        const { title, stock, price, description, image_base_64 } = product_data;
-    
-        const updatedTitle = title !== undefined ? title : null;
-        const updatedStock = stock !== undefined ? stock : null;
-        const updatedPrice = price !== undefined ? price : null;
-        const updatedDescription = description !== undefined ? description : null;
-        const updatedImageBase64 = image_base_64 !== undefined ? image_base_64 : null;
-    
-        const query = `
-        UPDATE products 
-        SET title = ?, stock = ?, price = ?, description = ?, image_base_64 = ?
-        WHERE id = ?
-        `;
-    
-        const [resultado] = await database_pool.execute(query, [
-            updatedTitle,
-            updatedStock,
-            updatedPrice,
-            updatedDescription,
-            updatedImageBase64,
-            product_id
-        ]);
-    
-        // Optionally, check if the update was successful
-        if (resultado.affectedRows === 0) {
-            throw new Error("Product not found or no changes made.");
-        }
-    
-        return ProductRepository.getProductById(product_id);
+    const fields = [];
+    const values = [];
+
+    const { title, stock, price, description, image_base_64 } = product_data;
+
+    if (title !== undefined) {
+        fields.push("title = ?");
+        values.push(title);
     }
+    if (stock !== undefined) {
+        fields.push("stock = ?");
+        values.push(stock);
+    }
+    if (price !== undefined) {
+        fields.push("price = ?");
+        values.push(price);
+    }
+    if (description !== undefined) {
+        fields.push("description = ?");
+        values.push(description);
+    }
+    if (image_base_64 !== undefined) {
+        fields.push("image_base_64 = ?");
+        values.push(image_base_64);
+    }
+
+    if (fields.length === 0) {
+        throw new Error("No fields provided to update.");
+    }
+
+    const query = `
+        UPDATE products
+        SET ${fields.join(", ")}
+        WHERE id = ?
+    `;
+
+    values.push(product_id);
+
+    const [resultado] = await database_pool.execute(query, values);
+
+    if (resultado.affectedRows === 0) {
+        throw new Error("Product not found or no changes made.");
+    }
+
+    return ProductRepository.getProductById(product_id);
+}
+
     
     static async deleteProduct(product_id) {
         const query = `
